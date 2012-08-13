@@ -1,0 +1,23 @@
+name: ZombieWeek
+version: 0.1
+main: com.hawkheart.bukkit.zombieweek.ZombieWeek
+
+commands:
+    zw:
+        permission: zw.commands
+        usage: /zw <options>
+        aliases: ['zombieweek']
+
+permissions:
+    zw.commands:
+        description: Basic command usage permission.
+        default: op
+    zw.forcewave:
+        description: Force wave.
+        default: op
+    zw.disablereload:
+        description: Ability to disable/restart ZW.
+        default: op
+    zw.reload:
+        description: Config file reload.
+        default: op

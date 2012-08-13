@@ -1,0 +1,8 @@
+#ZombieWeek configuration.
+
+combat:
+    multipliers:
+        #Zombie health multiplier.
+        zombiehealth: 2
+        #Multiplier of damage. 1 is vanilla, 2 is recommended.
+        zombiedamage: 2
