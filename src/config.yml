@@ -1,8 +1,19 @@
 #ZombieWeek configuration.
 
 combat:
-    multipliers:
-        #Zombie health multiplier.
-        zombiehealth: 2
-        #Multiplier of damage. 1 is vanilla, 2 is recommended.
-        zombiedamage: 2
+    #Zombie health multiplier.
+    zombiehealth: 2
+    #Multiplier of damage. 1 is vanilla, 2 is recommended.
+    zombiedamage: 2
+messages:
+    enable:
+        wavebegin: true
+        wavedone: true
+    wavebegin: WAVE STARTING
+    wavedone: WAVE ENDING
+wave:
+    zombies: 50
+    secondsbetween: 300
+    spawn:
+        startdistance: 6
+        enddistance: 32

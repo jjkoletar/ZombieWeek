@@ -10,17 +10,26 @@ public class ZombieWeek extends JavaPlugin {
 
 	public static int healthMultiplier;
 	public static int damageMultiplier;
-
+	
+	public static String waveStart;
+	public static String waveEnd;
+	
+	public static boolean useWaveStartMessage;
+	public static boolean useWaveEndMessage;
+	
+	public static int zombiesPerWave;
+	public static int secondsBetweenWaves;
+	
+	public static int spawnAreaStart;
+	public static int spawnAreaEnd;
+	
+	public static boolean enableWave;
+	
 	public void onEnable() {
-		currentlyEnabled = true;
-
 		this.saveDefaultConfig();
 		this.loadConfig();
-
-		this.getServer()
-				.getScheduler()
-				.scheduleSyncRepeatingTask(this, new ZWSpawnZombieTask(this),
-						0L, 6000L);
+		
+		this.enableRepeating();
 
 		this.getServer().getPluginManager()
 				.registerEvents(new ZombieWeekEntityListener(), this);
@@ -36,7 +45,7 @@ public class ZombieWeek extends JavaPlugin {
 	private String[] getHelpMessage() {
 		String[] msg = new String[2];
 		msg[0] = ChatColor.DARK_BLUE + "Usage: /zw <command>";
-		msg[1] = ChatColor.DARK_RED + "Commands: enable, disable, wave";
+		msg[1] = ChatColor.DARK_RED + "Commands: enable, disable, wave, reload";
 
 		return msg;
 	}
@@ -54,10 +63,13 @@ public class ZombieWeek extends JavaPlugin {
 					handleWave(sender);
 				} else if (args[0].equalsIgnoreCase("reload")) {
 					this.handleReload(sender);
-				} else
+				} else {
 					sender.sendMessage(getHelpMessage());
+				}
+				break;
 			default:
 				sender.sendMessage(getHelpMessage());
+				break;
 			}
 			return true;
 		}
@@ -82,15 +94,19 @@ public class ZombieWeek extends JavaPlugin {
 			return;
 		}
 		if (currentlyEnabled == false) {
-			this.getServer()
-					.getScheduler()
-					.scheduleSyncRepeatingTask(this,
-							new ZWSpawnZombieTask(this), 0L, 6000L);
-			currentlyEnabled = true;
+			this.enableRepeating();
 			sender.sendMessage(ChatColor.DARK_AQUA + "Enabled!");
 		} else {
 			sender.sendMessage(ChatColor.DARK_RED + "Already Enabled");
 		}
+	}
+	
+	private void enableRepeating() {
+		this.getServer().getScheduler().cancelTasks(this);
+		
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new ZWSpawnZombieTask(this), 0L, secondsBetweenWaves * 20L);
+		
+		currentlyEnabled = true;
 	}
 
 	private void handleDisable(CommandSender sender) {
@@ -114,7 +130,7 @@ public class ZombieWeek extends JavaPlugin {
 					+ "You do not have permission for this command.");
 			return;
 		}
-		sender.sendMessage(ChatColor.BLACK + "FORCING WAVE.");
+		sender.sendMessage(ChatColor.DARK_BLUE + "FORCING WAVE.");
 		this.getServer().getScheduler()
 				.scheduleSyncDelayedTask(this, new ZWSpawnZombieTask(this), 0L);
 	}
@@ -123,12 +139,35 @@ public class ZombieWeek extends JavaPlugin {
 		this.reloadConfig();
 
 		healthMultiplier = this.getConfig().getInt(
-				"combat.multipliers.zombiehealth");
+				"combat.zombiehealth");
 		damageMultiplier = this.getConfig().getInt(
-				"combat.multipliers.zombiedamage");
+				"combat.zombiedamage");
+		
+		
+		useWaveStartMessage = this.getConfig().getBoolean("messages.enable.wavebegin");
+		useWaveEndMessage = this.getConfig().getBoolean("messages.enable.wavedone");
+		
+		waveStart = this.getConfig().getString("messages.wavebegin");
+		waveEnd = this.getConfig().getString("messages.wavedone");
+		
+		zombiesPerWave = this.getConfig().getInt("wave.zombies");
+		secondsBetweenWaves = this.getConfig().getInt("wave.secondsbetween");
+		
+		spawnAreaStart = this.getConfig().getInt("wave.spawn.startdistance");
+		spawnAreaEnd = this.getConfig().getInt("wave.spawn.enddistance");
+		
+		enableWave = this.getConfig().getBoolean("wave.enable");
+		
+		if (secondsBetweenWaves <= 0) {
+			throw new IllegalArgumentException("Time between waves cannot be less than one second.");
+		}
+		
+		
+		this.enableRepeating();
 
 		System.out.println("Health multiplier " + healthMultiplier
 				+ ", damage multiplier " + damageMultiplier);
+		
 	}
 
 }

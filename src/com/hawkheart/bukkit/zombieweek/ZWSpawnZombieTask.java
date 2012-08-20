@@ -19,17 +19,17 @@ public class ZWSpawnZombieTask implements Runnable {
 	
 	@Override
 	public void run() {
-		zw.getServer().broadcastMessage("NEW WAVE SPAWNING...");
+		if (ZombieWeek.useWaveStartMessage) zw.getServer().broadcastMessage(ZombieWeek.waveStart);
 		
 		for (Player p : zw.getServer().getOnlinePlayers()) {
 			Location playerLocation = p.getLocation();
 			int i = 0;
-			while (i < 25) {
+			while (i < ZombieWeek.zombiesPerWave) {
 				boolean negX = rand1.nextBoolean();
 				boolean negZ = rand1.nextBoolean();
 				
-				int nextX = rand1.nextInt(43) + 8;
-				int nextZ = rand1.nextInt(43) + 8;
+				int nextX = rand1.nextInt(ZombieWeek.spawnAreaEnd - ZombieWeek.spawnAreaStart) + ZombieWeek.spawnAreaStart;
+				int nextZ = rand1.nextInt(ZombieWeek.spawnAreaEnd - ZombieWeek.spawnAreaStart) + ZombieWeek.spawnAreaEnd;
 				
 				if (negX) {
 					nextX = -nextX;
@@ -55,7 +55,7 @@ public class ZWSpawnZombieTask implements Runnable {
 				}
 			}
 		}
-		zw.getServer().broadcastMessage("WAVE DONE.");
+		if (ZombieWeek.useWaveEndMessage) zw.getServer().broadcastMessage(ZombieWeek.waveEnd);
 	}
 
 }
